@@ -1,0 +1,60 @@
+---
+import '../styles/global.css';
+import { assetUrl, canonicalPath, site } from '../lib/site';
+import Analytics from '@vercel/analytics/astro';
+
+interface Props {
+	title: string;
+	description: string;
+	path: string;
+	pageTitle?: string;
+	ogType?: 'website' | 'article';
+	image?: { src: string; alt: string };
+}
+const { title, description, path, pageTitle, ogType = 'website', image } = Astro.props;
+const canonical = canonicalPath(path);
+const documentTitle = pageTitle ?? title;
+const share = image ? { src: assetUrl(image.src), alt: image.alt } : undefined;
+---
+
+<!doctype html>
+<html lang="en-NZ">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>{documentTitle}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical} />
+		<link rel="sitemap" type="application/xml" href={`${site.url}/sitemap-index.xml`} />
+		<meta name="author" content={site.author} />
+		<meta property="og:site_name" content={site.name} />
+		<meta property="og:title" content={documentTitle} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:type" content={ogType} />
+		<meta property="og:locale" content="en_NZ" />
+		{share && <meta property="og:image" content={share.src} />}
+		{share && <meta property="og:image:alt" content={share.alt} />}
+		<meta name="twitter:card" content={share ? 'summary_large_image' : 'summary'} />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<Analytics />
+		<slot name="head" />
+	</head>
+	<body>
+		<header class="site-header">
+			<div class="wrap">
+				<a class="brand" href="/"><img src="/logo.svg" alt="" width="30" height="30" />{site.name}</a>
+				<nav class="nav" aria-label="Site">
+					<a href="/" aria-current={path === '/' ? 'page' : undefined}>Guides</a>
+					<a href="/about" aria-current={path === '/about' ? 'page' : undefined}>About</a>
+				</nav>
+			</div>
+		</header>
+		<main><div class="wrap"><slot /></div></main>
+		<footer class="site-footer">
+			<div class="wrap">
+				<p>{site.name} · {site.tagline}. General information only, not professional advice. Get a pre-purchase inspection.</p>
+			</div>
+		</footer>
+	</body>
+</html>

@@ -1,0 +1,17 @@
+---
+import Base from '../layouts/Base.astro';
+import { site } from '../lib/site';
+// MIMIC: About copy is a first pass for Mimic to rewrite. Do not add personal claims Lee has not supplied.
+---
+
+<Base title="About" description="Import Owner NZ publishes sourced, practical guides for people who own or are buying a Japanese import car in New Zealand." path="/about" pageTitle={`About ${site.name}`}>
+	<h1>About {site.name}</h1>
+	<p>{site.name} is a practical guide site for people who own, or are about to buy, a Japanese import car in New Zealand.</p>
+	<p>Most advice online comes from dealers or from performance-car fans. This site is written from the owner's side of the driveway: what to check, what it costs, and what to do next.</p>
+	<h2>How we write</h2>
+	<ul>
+		<li>One question per guide, with the answer in the first paragraph.</li>
+		<li>Primary sources first, such as NZTA, with the date each fact was last checked.</li>
+		<li>No legal, financial or safety advice beyond what the sources say. Always get a pre-purchase inspection.</li>
+	</ul>
+</Base>

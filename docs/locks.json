@@ -1,0 +1,13 @@
+{
+  "note": "Only Lee locks or unlocks. Changing this file requires --lock/--relock with Lee's words in \"approval\".",
+  "artifacts": [],
+  "lockedLines": [
+    { "file": "docs/rules.md", "lines": [
+      "- Every post carries a lastChecked date and its primary sources (NZTA first).",
+      "- No legal, financial or safety advice beyond sourced facts.",
+      "- No invented numbers, listings or personal experience. Anything Lee must supply is marked [LEE: ...].",
+      "- Future-dated posts (pubDate after today, Pacific/Auckland) must never appear in pages or the sitemap.",
+      "- Nothing is bought or published live without Lee's approval."
+    ] }
+  ]
+}

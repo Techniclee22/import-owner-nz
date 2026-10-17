@@ -1,0 +1,22 @@
+{
+  "name": "import-owner-nz",
+  "type": "module",
+  "version": "0.1.0",
+  "engines": { "node": ">=22.12.0" },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro",
+    "prepare": "node scripts/install-git-hooks.mjs",
+    "test": "node --test scripts/gating-test.mjs",
+    "check:locks": "node scripts/check-locks.mjs",
+    "verify": "node scripts/verify.mjs",
+    "hooks:install": "git config core.hooksPath .githooks && chmod +x .githooks/*"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@vercel/analytics": "^2.0.1",
+    "astro": "^7.2.10"
+  }
+}

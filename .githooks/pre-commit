@@ -1,0 +1,3 @@
+#!/bin/sh
+# Pre-commit: locked artifacts and lock lines must not change without Lee's approval.
+node scripts/check-locks.mjs || exit 1

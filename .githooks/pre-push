@@ -1,0 +1,25 @@
+#!/bin/sh
+# Pre-push: fail HERE (seconds) instead of on Vercel / after Lee looks. Installed by scripts/install-git-hooks.mjs.
+#   1. No agent pushes to main (daily-unlock CI pushes from Actions, not through this hook).   override: ALLOW_MAIN_PUSH=1 (Lee only)
+#   2. Workflow files need the `workflow` token scope (box PAT lacks it; PR #62 existed because of it).  override: ALLOW_WORKFLOW_PUSH=1
+#   3. Anything touching content / scripts / locks must pass `npm run verify -- --fast`.
+zero=0000000000000000000000000000000000000000
+while read local_ref local_sha remote_ref remote_sha; do
+	[ "$local_sha" = "$zero" ] && continue                       # branch deletion
+	case "$remote_ref" in
+		refs/heads/main|refs/heads/master)
+			if [ -z "$ALLOW_MAIN_PUSH" ]; then
+				echo "pre-push: blocked push to ${remote_ref#refs/heads/}. Push a branch and open a PR (Lee merges). Lee-only override: ALLOW_MAIN_PUSH=1." >&2; exit 1
+			fi;;
+	esac
+	if [ "$remote_sha" = "$zero" ]; then range="origin/main..$local_sha"; else range="$remote_sha..$local_sha"; fi
+	files=$(git diff --name-only $range 2>/dev/null)
+	if echo "$files" | grep -q '^\.github/workflows/' && [ -z "$ALLOW_WORKFLOW_PUSH" ]; then
+		echo "pre-push: this push edits .github/workflows/*, which needs the 'workflow' token scope. Stage the file in docs/workflows/ and tell Lee to move it (PR #62 pattern). Override: ALLOW_WORKFLOW_PUSH=1." >&2; exit 1
+	fi
+	if echo "$files" | grep -Eq '^(scripts/|docs/locks\.json|src/|public/|package\.json)'; then
+		echo "pre-push: running npm run verify -- --fast (content or tooling changed)…" >&2
+		npm run --silent verify -- --fast || { echo "pre-push: verify failed; fix the step above (or run npm run verify for the full build)." >&2; exit 1; }
+	fi
+done
+exit 0

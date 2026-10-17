@@ -1,0 +1,44 @@
+---
+import Base from './Base.astro';
+import { formatDate, site } from '../lib/site';
+
+interface Props {
+	title: string; description: string; path: string; pageTitle?: string;
+	jsonLd: Record<string, unknown>;
+	pubDate: Date; lastChecked: Date;
+	sources: { title: string; url: string; checked?: Date }[];
+	pillar?: { id: string; title: string };
+	related: { id: string; title: string }[];
+	image?: { src: string; alt: string };
+}
+const { title, description, path, pageTitle, jsonLd, pubDate, lastChecked, sources, pillar, related, image } = Astro.props;
+---
+
+<Base title={title} description={description} path={path} pageTitle={pageTitle ?? title} ogType="article" image={image}>
+	<article class="article">
+		<h1>{title}</h1>
+		<p class="meta">
+			<a href={site.authorPath}>{site.author}</a> · <time datetime={pubDate.toISOString()}>{formatDate(pubDate)}</time> · Last checked: <time datetime={lastChecked.toISOString()}>{formatDate(lastChecked)}</time>
+		</p>
+		{pillar && <p class="meta">Part of the guide: <a href={`/posts/${pillar.id}`}>{pillar.title}</a></p>}
+		<div class="body"><slot /></div>
+		{sources.length > 0 && (
+			<section class="sources">
+				<h2>Sources</h2>
+				<ul>
+					{sources.map((s) => (
+						<li><a href={s.url} rel="noopener">{s.title}</a>{s.checked && <> (checked {formatDate(s.checked)})</>}</li>
+					))}
+				</ul>
+			</section>
+		)}
+		<p class="note">General information, not professional advice. Get a pre-purchase inspection before you buy.</p>
+	</article>
+	{related.length > 0 && (
+		<nav class="related" aria-label="Related posts">
+			<h2>Related posts</h2>
+			<ul>{related.map((r) => <li><a href={`/posts/${r.id}`}>{r.title}</a></li>)}</ul>
+		</nav>
+	)}
+	<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />
+</Base>

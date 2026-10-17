@@ -1,0 +1,49 @@
+---
+import { render } from 'astro:content';
+import Post from '../../layouts/Post.astro';
+import { livePosts } from '../../lib/posts';
+import { assetUrl, site } from '../../lib/site';
+
+export async function getStaticPaths() {
+	const posts = await livePosts();
+	return posts.map((post) => ({ params: { slug: post.id }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const path = `/posts/${post.id}`;
+const live = await livePosts();
+const pillarEntry = post.data.pillar ? live.find((p) => p.id === post.data.pillar) : undefined;
+const related = live.filter((p) => p.id !== post.id && p.data.cluster === post.data.cluster).slice(0, 3).map((p) => ({ id: p.id, title: p.data.title }));
+const image = post.data.image ? (typeof post.data.image === 'string' ? { src: post.data.image, alt: post.data.title } : post.data.image) : undefined;
+
+const jsonLd = {
+	'@context': 'https://schema.org',
+	'@type': 'BlogPosting',
+	headline: post.data.title,
+	description: post.data.description,
+	datePublished: post.data.pubDate.toISOString(),
+	dateModified: (post.data.updatedDate ?? post.data.pubDate).toISOString(),
+	inLanguage: 'en-NZ',
+	author: { '@type': 'Organization', name: site.author, url: `${site.url}${site.authorPath}` },
+	publisher: { '@type': 'Organization', name: site.name, url: site.url },
+	mainEntityOfPage: `${site.url}${path}`,
+	...(image ? { image: assetUrl(image.src) } : {}),
+};
+---
+
+<Post
+	title={post.data.title}
+	description={post.data.description}
+	path={path}
+	pageTitle={post.data.seoTitle ?? post.data.title}
+	jsonLd={jsonLd}
+	pubDate={post.data.pubDate}
+	lastChecked={post.data.lastChecked}
+	sources={post.data.sources}
+	pillar={pillarEntry ? { id: pillarEntry.id, title: pillarEntry.data.title } : undefined}
+	related={related}
+	image={image}
+>
+	<Content />
+</Post>

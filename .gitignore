@@ -1,0 +1,9 @@
+dist/
+.astro/
+node_modules/
+.env
+.env.production
+.DS_Store
+.vercel/
+.verify-last.json
+npm-debug.log*

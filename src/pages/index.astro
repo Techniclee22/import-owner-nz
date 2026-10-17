@@ -1,0 +1,46 @@
+---
+import Base from '../layouts/Base.astro';
+import { livePosts } from '../lib/posts';
+import { formatDate, site } from '../lib/site';
+
+// MIMIC: home copy below is a first pass written by Dash for Mimic to rewrite/unslop. Keep facts general; no invented numbers.
+const posts = await livePosts();
+const description = 'Practical, sourced guides for owning a Japanese import car in New Zealand: batteries, running costs, WoF, rust and buying checks.';
+---
+
+<Base title={site.name} description={description} path="/" pageTitle={`${site.name}: ${site.tagline}`}>
+	<section class="hero">
+		<h1>{site.name}</h1>
+		<p class="tagline">{site.tagline}</p>
+		<p>
+			A Japanese import is cheap to buy and easy to love, and then the questions start. Is that Leaf battery healthy? What does a hybrid pack cost to
+			replace? Will it pass a WoF? What will it really cost to run each week?
+		</p>
+		<p>
+			This site answers one question per guide, with the answer first, the sources listed and a date showing when each fact was last checked.
+			We lean on NZTA and other primary sources, we say when we are unsure, and we never guess at numbers.
+		</p>
+		<div class="answer-box">
+			<strong>How to use it.</strong> Start with the buying and battery guides if you are shopping. Start with running costs and servicing if you already own one.
+			Every guide links to the bigger guide it belongs to and to related posts.
+		</div>
+	</section>
+	<h2>Latest guides</h2>
+	{
+		posts.length === 0 ? (
+			<p>The first guides are being finished and will appear here one a day.</p>
+		) : (
+			<ol class="archive">
+				{posts.map((post) => (
+					<li>
+						<a href={`/posts/${post.id}`}>
+							<h3>{post.data.title}</h3>
+							<p class="dek">{post.data.description}</p>
+							<time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate)}</time>
+						</a>
+					</li>
+				))}
+			</ol>
+		)
+	}
+</Base>
